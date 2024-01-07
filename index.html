@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple Slider demo</title>
+	<link rel="stylesheet" href="slider.css">
+</head>
+<body style="height: 100vh;">
+<div style="max-width: 600px; margin: 0 auto;">
+	<div id="slider" class="slider">
+		<div class="slider__stage">
+			<div class="slider__item"><img src="https://dummyimage.com/600x400/000/fff.jpg"/></div>
+			<div class="slider__item"><img src="https://dummyimage.com/600x400/000/fff.jpg"/></div>
+			<div class="slider__item"><img src="https://dummyimage.com/600x400/000/fff.jpg"/></div>
+		</div>
+	</div>
+	<div class="slider__navigation flex w-100 rel flex-center">
+                    <div class="slider__nav flex flex-center mt-30 mb-10"><button type="button" class="owl-prev slider__nav-btn disabled"><</button><button type="button" class="slider__nav-btn owl-next">></button></div>
+                    <div class="slider__dots abs flex align-center"><button class="slider__dots-item owl-dot active" data-index="0"><span></span></button><button class="slider__dots-item owl-dot" data-index="1"><span></span></button><button class="slider__dots-item owl-dot" data-index="2"><span></span></button><button class="slider__dots-item owl-dot" data-index="3"><span></span></button></div>
+                </div>
+</div>
+
+<script src="slider.js"></script>
+	<script src="main.js"></script>
+</body>
+</html>

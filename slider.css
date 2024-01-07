@@ -1,0 +1,24 @@
+.slider {
+	overflow: hidden;
+	transition: all 0.2s ease-in-out;
+	--stagePadding: 0;
+    --margin: 20px;
+    --items-count: 3;
+}
+
+.slider__stage {
+	transition: all .4s ease-out;
+}
+
+.slider__item {
+	float: left;
+}
+
+.slider__dots {
+	counter: reset;
+}
+
+.slider__dots-item:before {
+    counter-increment: dots;
+    content: counter(dots);
+}
