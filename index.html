@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Simple Slider demo</title>
 	<link rel="stylesheet" href="slider.css">
 </head>
@@ -14,13 +15,20 @@
 			<div class="slider__item"><img src="https://dummyimage.com/600x400/000/fff.jpg"/></div>
 		</div>
 	</div>
-	<div class="slider__navigation flex w-100 rel flex-center">
-                    <div class="slider__nav flex flex-center mt-30 mb-10"><button type="button" class="owl-prev slider__nav-btn disabled"><</button><button type="button" class="slider__nav-btn owl-next">></button></div>
-                    <div class="slider__dots abs flex align-center"><button class="slider__dots-item owl-dot active" data-index="0"><span></span></button><button class="slider__dots-item owl-dot" data-index="1"><span></span></button><button class="slider__dots-item owl-dot" data-index="2"><span></span></button><button class="slider__dots-item owl-dot" data-index="3"><span></span></button></div>
-                </div>
+	<div class="slider__navigation">
+        <div class="slider__nav">
+			<button type="button" class="slider__nav-btn prev disabled">&lt;</button>
+			<button type="button" class="slider__nav-btn next">&gt;</button>
+		</div>
+        <div class="slider__dots">
+			<button class="slider__dots-item active" data-index="0"></button>
+			<button class="slider__dots-item" data-index="1"></button>
+			<button class="slider__dots-item" data-index="2"></button>
+		</div>
+    </div>
 </div>
 
 <script src="slider.js"></script>
-	<script src="main.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function () {
             dots: navigation ? navigation.querySelector('.slider__dots') : null,
             margin: parseFloat(computedStyle.getPropertyValue('--margin')),
             itemSelector: '.slider__item',
+            swiping: true,
         });
 
     Slider.init();

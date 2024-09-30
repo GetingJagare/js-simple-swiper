@@ -14,8 +14,8 @@
 	float: left;
 }
 
-.slider__dots {
-	counter: reset;
+.slider__item img {
+	max-width: 100%;
 }
 
 .slider__dots-item:before {

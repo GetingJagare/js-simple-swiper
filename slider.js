@@ -23,28 +23,20 @@ let sliderExample = {
             return;
         }
 
-        let thisObject = this;
+        this.nav.addEventListener('click', (event) => {
+            let navBtn = event.target.closest('.slider__nav-btn');
 
-        for (let i = 0; i < this.nav.length; i++) {
-            if (!this.nav[i]) {
+            if (navBtn.classList.contains('prev') && this.currentItem === 0) {
                 return;
             }
 
-            this.nav[i].addEventListener('click', function (event) {
-                let navBtn = event.target.closest('.slider__nav-arrow-wrapper');
+            if (navBtn.classList.contains('next') && this.currentItem === this.itemsCount - 1) {
+                return;
+            }
 
-                if (navBtn.classList.contains('prev') && thisObject.currentItem === 0) {
-                    return;
-                }
-
-                if (navBtn.classList.contains('next') && thisObject.currentItem === thisObject.itemsCount - 1) {
-                    return;
-                }
-
-                thisObject.currentItem += (navBtn.classList.contains('prev') ? -1 : 1);
-                thisObject.translateStage();
-            });
-        }
+            this.currentItem += (navBtn.classList.contains('prev') ? -1 : 1);
+            this.translateStage();
+        });
     },
 
     getEvent: function (e) {
@@ -166,13 +158,6 @@ let sliderExample = {
         }
 
         this.itemsCount = this.el.querySelectorAll(this.itemSelector).length;
-
-        for (let i = 0; i < this.itemsCount; i++) {
-            this.dots.innerHTML += '<div class="slider__dots-item flex align-center flex-center' +
-                (i === 0 ? ' active': '') + '" data-index="' + i + '">' +
-                '<span class="slider__dots-dot ib"></span></div>';
-        }
-
         let thisObject = this;
 
         this.dots.addEventListener('click', function (event) {
@@ -236,13 +221,13 @@ let sliderExample = {
 
     init: function () {
         if (!this.initialized) {
+            this.elStyle = getComputedStyle(this.el);
             this.initNav();
             this.initDots();
 
             this.initialized = true;
         } else {
             this.resetInlineStyles();
-            this.elStyle = getComputedStyle(this.el);
         }
 
         this.setParameters();
@@ -253,7 +238,7 @@ let sliderExample = {
     }
 };
 
-export default {
+window.Slider = {
     sliders: [],
 
     create: function (slider, options) {
