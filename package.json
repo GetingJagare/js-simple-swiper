@@ -1,5 +1,5 @@
 {
-  "name": "simple-swiper",
+  "name": "js-simple-swiper",
   "version": "1.0.0",
   "main": "dist/index.js",
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "author": "Nikita Churilov",
   "license": "ISC",
-  "description": "",
+  "description": "JS Simple Swiper",
   "devDependencies": {
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",
@@ -23,5 +23,20 @@
     "typescript": "^5.6.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"
-  }
+  },
+  "keywords": [
+    "js swiper",
+    "swiper",
+    "simple swiper",
+    "es swiper",
+    "es6 swiper"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/GetingJagare/simple-swiper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GetingJagare/simple-swiper/issues"
+  },
+  "homepage": "https://github.com/GetingJagare/simple-swiper#readme"
 }
