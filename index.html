@@ -5,31 +5,21 @@
 	<title>Simple Slider demo</title>
 	<link rel="stylesheet" href="dist/index.css">
 </head>
-<body style="height: 100vh;">
+<body>
 <div style="max-width: 600px; margin: 0 auto;">
 	<div id="swiper">
 		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
 		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
 		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
+		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
+		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
+		<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
 	</div>
-	<!-- <div class="slider__navigation">
-        <div class="slider__nav">
-			<button type="button" class="slider__nav-btn prev disabled">&lt;</button>
-			<button type="button" class="slider__nav-btn next">&gt;</button>
-		</div>
-        <div class="slider__dots">
-			<button class="slider__dots-item active" data-index="0"></button>
-			<button class="slider__dots-item" data-index="1"></button>
-			<button class="slider__dots-item" data-index="2"></button>
-		</div>
-    </div> -->
 </div>
 
 <script type="module">
 	import Swiper from './dist/index.js';
-	new Swiper('#swiper', {
-		margin: 20
-	});
+	new Swiper('#swiper');
 </script>
 </body>
 </html>

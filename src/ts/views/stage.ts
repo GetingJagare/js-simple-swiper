@@ -1,9 +1,19 @@
-export function renderStage(itemList: HTMLCollection | NodeList | Array<HTMLElement>): string {
-    let items = ``;
+export function renderStage(
+    parent: HTMLElement,
+): void {
+    const innerElement = document.createElement('div');
+    innerElement.classList.add('s-swiper__inner');
 
-    for (let i = 0; i < itemList.length; i++) {
-        items = `${items}<div class="s-swiper__item">${(itemList[i] as HTMLElement).outerHTML}</div>`
+    const stageElement = document.createElement('div');
+    stageElement.classList.add('s-swiper__stage');
+    innerElement.appendChild(stageElement);
+
+    while (parent.children.length) {
+        const itemElement = document.createElement('div');
+        itemElement.classList.add('s-swiper__item');
+        itemElement.appendChild(parent.children[0]);
+        stageElement.appendChild(itemElement);
     }
 
-    return `<div class="s-swiper__stage">${items}</div>`;
+    parent.appendChild(innerElement);
 }

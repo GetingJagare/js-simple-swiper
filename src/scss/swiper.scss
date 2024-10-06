@@ -2,6 +2,25 @@
 	overflow: hidden;
 	transition: all .2s ease-in-out;
 	position: relative;
+	--dots-height: 0;
+
+	&,
+	&.default {
+		--dot-width: 6px;
+		--dot-height: 6px;
+		--active-dot-width: 10px;
+		--active-dot-height: 10px;
+		--dot-color: rgba(0, 0, 0, 0.5);
+		--active-dot-color: rgba(0, 0, 0, 1);
+		--arrow-width: 30px;
+		--arrow-height: 60px;
+		--arrow-color: rgba(0, 0, 0, 0.5);
+		--arrow-hover-color: rgba(0, 0, 0, 1);
+	}
+
+	&__inner {
+		overflow: hidden;
+	}
 
 	&__stage {
 		transition: all .4s ease-out;
@@ -15,7 +34,94 @@
 		}
 	}
 
-	&.default {
-		
+	&__arrows {
+		position: absolute;
+		left: 0;
+		right: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		top: 50%;
+		transform: translateY(calc(-50% - calc(var(--dots-height) / 2)));
+	}
+
+	&__arrow {
+		position: absolute;
+		left: 0;
+		width: var(--arrow-width);
+		height: var(--arrow-height);
+		left: 0;
+		cursor: pointer;
+
+		&,
+		&:before {
+			transition: all .2s ease-in-out;
+		}
+
+		&:before {
+			position: absolute;
+			content: '';
+			width: calc(var(--arrow-width) * 0.6);
+			height: calc(var(--arrow-width) * 0.6);
+			border: 2px solid var(--arrow-color);
+			border-top: none;
+			border-right: none;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+
+		&.next {
+			left: auto;
+			right: 0;
+
+			&:before {
+				transform: translate(-50%, -50%) rotate(-135deg);
+			}
+		}
+
+		&:hover {
+			&:before {
+				border-color: var(--arrow-hover-color);
+			}
+		}
+	}
+
+	&__dots {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	&__dot {
+		position: relative;
+		width: calc(var(--dot-width) * 5);
+		height: calc(var(--dot-height) * 4);
+		cursor: pointer;
+
+		&:before {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			content: '';
+			border-radius: 50%;
+			width: var(--dot-width);
+			height: var(--dot-height);
+			background-color: var(--dot-color);
+			transition: all .2s ease-in-out;
+		}
+
+		&.active {
+			&:before {
+				width: var(--active-dot-width);
+				height: var(--active-dot-height);
+				background-color: var(--active-dot-color);
+			}
+		}
 	}
 }

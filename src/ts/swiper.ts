@@ -3,6 +3,7 @@ import { IState } from "./interfaces/state";
 import { linesAngle } from "./helpers/math";
 import { Line } from "./interfaces/math";
 import { renderStage } from "./views/stage";
+import { renderArrows, renderDots } from "./views/nav";
 import '../scss/swiper.scss';
 
 export default class Swiper {
@@ -12,17 +13,24 @@ export default class Swiper {
             dots: true,
         },
         margin: 20,
+        stagePadding: 30,
         swiping: false,
         maxSwipingVertAngle: 45,
+        theme: 'default',
+        breakpoints: {
+            768: {
+                swiping: true,
+            }
+        }
     }
     state: IState = {
         currentItem: 0,
         el: null,
-        style: null,
         stage: null,
-        slideWidth: 0,
+        inner: null,
+        swiperWidth: 0,
+        itemWidth: 0,
         initialized: false,
-        theme: 'default',
         items: [],
         swiping: {
             startX: null,
@@ -57,27 +65,36 @@ export default class Swiper {
                 this.init();
             }, 300);
         });
-    }
 
-    initNav() {
-        if (!this.options.nav) {
-            return;
-        }
+        this.state.el.addEventListener('click', (event: MouseEvent) => {
+            const dot = (event.target as HTMLElement).closest('.s-swiper__dot');
 
-        // this.nav.addEventListener('click', (event: MouseEvent) => {
-        //     let navBtn = (event.target as HTMLElement).closest('.slider__nav-btn');
+            if (!dot) {
+                return;
+            }
 
-        //     if (navBtn.classList.contains('prev') && this.currentItem === 0) {
-        //         return;
-        //     }
+            this.state.currentItem = parseInt(dot.getAttribute('data-index'));
+            this.translateStage();
+        });
 
-        //     if (navBtn.classList.contains('next') && this.currentItem === this.itemsCount - 1) {
-        //         return;
-        //     }
+        this.state.el.addEventListener('click', (event: MouseEvent) => {
+            const arrow = (event.target as HTMLElement).closest('.s-swiper__arrow');
 
-        //     this.currentItem += (navBtn.classList.contains('prev') ? -1 : 1);
-        //     this.translateStage();
-        // });
+            if (!arrow) {
+                return;
+            }
+
+            if (arrow.classList.contains('prev') && this.state.currentItem === 0) {
+                return;
+            }
+
+            if (arrow.classList.contains('next') && this.state.currentItem === this.state.items.length - 1) {
+                return;
+            }
+
+            this.state.currentItem += (arrow.classList.contains('prev') ? -1 : 1);
+            this.translateStage();
+        });
     }
 
     getEvent(e: MouseEvent | TouchEvent) {
@@ -177,31 +194,8 @@ export default class Swiper {
         // this.el.addEventListener('touchcancel', function (e) { if (context.isSwiping()) { context.swipeEnd(e); } });
     }
 
-    switchSwiping() {
-        // if (window.matchMedia('(max-width: 767.98px)').matches) {
-        //     this.attachSwipingEvents();
-        // }
-    }
-
-    initDots() {
-        // if (!this.options.nav.dots) {
-        //     return;
-        // }
-
-        // this.dots.addEventListener('click', function (event) {
-        //     let dot = event.target.closest('.slider__dots-item');
-
-        //     if (!dot) {
-        //         return;
-        //     }
-
-        //     thisObject.currentItem = parseInt(dot.getAttribute('data-index'));
-        //     thisObject.translateStage();
-        // });
-    }
-
     calculateTranslate(): number {
-        return (this.state.slideWidth + this.options.margin) * this.state.currentItem;
+        return (this.state.itemWidth + this.options.margin) * this.state.currentItem;
     }
 
     translateStage() {
@@ -210,35 +204,39 @@ export default class Swiper {
     }
 
     changeActiveDot() {
-        // let activeDot = this.dots.querySelector('.slider__dots-item.active');
+        const activeDot = this.state.el.querySelector('.s-swiper__dot.active');
+        const dots = this.state.el.querySelectorAll('.s-swiper__dot');
 
-        // if (!activeDot) {
-        //     return;
-        // }
-
-        // activeDot.classList.remove('active');
-        // let dots = this.dots.querySelectorAll('.slider__dots-item');
-        // dots[this.currentItem].classList.add('active');
+        activeDot.classList.remove('active');
+        dots[this.state.currentItem].classList.add('active');
     }
 
     setStyles() {
         this.state.stage = this.state.el.querySelector('.s-swiper__stage');
-        this.state.slideWidth = parseFloat(this.state.style.getPropertyValue('width'));
+        this.state.inner.style.marginLeft = `${this.options.stagePadding}px`;
+        this.state.inner.style.marginRight = `${this.options.stagePadding}px`;
+        this.state.el.style.width = `${this.state.swiperWidth}px`;
 
-        this.state.el.style.width = `${this.state.slideWidth}px`;
+        const dots = this.state.el.querySelector('.s-swiper__dots');
+
+        if (dots) {
+            this.state.el.style.paddingBottom = `${dots.scrollHeight}px`;
+            this.state.el.style.setProperty('--dots-height', `${dots.scrollHeight}px`);
+        }
 
         for (let i = 0; i < this.state.items.length; i++) {
-            (this.state.items[i] as HTMLElement).style.width = `${this.state.slideWidth}px`;
+            (this.state.items[i] as HTMLElement).style.width = `${this.state.itemWidth}px`;
             (this.state.items[i] as HTMLElement).style.marginRight = `${this.options.margin}px`;
         }
 
-        this.state.stage.style.width = `${(this.state.slideWidth + this.options.margin) * this.state.items.length}px`;
+        this.state.stage.style.width = `${(this.state.itemWidth + this.options.margin) * this.state.items.length}px`;
         this.state.stage.style.transform = `translateX(-${this.calculateTranslate()}px)`;
     }
 
     resetStyles() {
         this.state.el.removeAttribute('style');
         this.state.stage.removeAttribute('style');
+        this.state.inner.removeAttribute('style');
 
         for (let i = 0; i < this.state.items.length; i++) {
             (this.state.items[i] as HTMLElement).removeAttribute('style');
@@ -246,16 +244,25 @@ export default class Swiper {
     }
 
     initNavigation(): void {
-        
+        if (this.options.nav.dots) {
+            renderDots(this.state.el, this.state.items.length);
+        }
+
+        if (this.options.nav.arrows) {
+            renderArrows(this.state.el);
+        }
     }
 
     initState(): void {
         this.state.el = document.querySelector(this.selector);
-        this.state.style = getComputedStyle(this.state.el);
-        this.state.el.classList.add('s-swiper');
+        this.state.el.classList.add('s-swiper', this.options.theme);
 
-        const itemList = this.state.el.children;
-        this.state.el.innerHTML = renderStage(itemList);
+        const elStyle = getComputedStyle(this.state.el);
+        this.state.swiperWidth = parseFloat(elStyle.getPropertyValue('width'));
+        this.state.itemWidth = this.state.swiperWidth - this.options.stagePadding * 2;
+
+        renderStage(this.state.el);
+        this.state.inner = this.state.el.querySelector('.s-swiper__inner');
         this.state.items = this.state.el.querySelectorAll('.s-swiper__item');
     }
 
@@ -271,9 +278,5 @@ export default class Swiper {
         }
 
         this.setStyles();
-
-        if (this.options.swiping) {
-            this.switchSwiping();
-        }
     }
 };
