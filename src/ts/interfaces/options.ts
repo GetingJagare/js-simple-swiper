@@ -7,6 +7,7 @@ export interface ISwiperOptions {
     nav?: INavOptions,
     margin?: number,
     stagePadding?: number,
+    items?: number,
     swiping?: boolean,
     maxSwipingVertAngle?: number,
     theme?: string,

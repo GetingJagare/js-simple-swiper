@@ -5,7 +5,7 @@ export function renderArrows(parent: HTMLElement): void {
     parent.appendChild(arrowsElement);
 
     const prevArrowElement = document.createElement('span');
-    prevArrowElement.classList.add('s-swiper__arrow', 'prev');
+    prevArrowElement.classList.add('s-swiper__arrow', 'prev', 'disabled');
     arrowsElement.appendChild(prevArrowElement);
 
     const nextArrowElement = document.createElement('span');

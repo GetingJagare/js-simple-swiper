@@ -4,6 +4,7 @@ import { linesAngle } from "./helpers/math";
 import { Line } from "./interfaces/math";
 import { renderStage } from "./views/stage";
 import { renderArrows, renderDots } from "./views/nav";
+import { mergeObjects } from "./helpers/object";
 import '../scss/swiper.scss';
 
 export default class Swiper {
@@ -14,7 +15,8 @@ export default class Swiper {
         },
         margin: 20,
         stagePadding: 30,
-        swiping: false,
+        items: 1,
+        swiping: true,
         maxSwipingVertAngle: 45,
         theme: 'default',
         breakpoints: {
@@ -39,18 +41,18 @@ export default class Swiper {
     }
     selector: string = ''
 
-    constructor(selector: string = '', options: ISwiperOptions = {}) {
+    constructor(selector: string = '', options: ISwiperOptions) {
         if (!selector) {
             return;
         }
 
         this.selector = selector;
-        this.options = {
-            ...this.options,
-            ...options,
-        };
-
+        this.applyOptions(options);
         this.init();
+    }
+
+    applyOptions(options: ISwiperOptions = {}): void {
+        mergeObjects(options, this.options);
     }
 
     attachEvents(): void {
@@ -80,15 +82,12 @@ export default class Swiper {
         this.state.el.addEventListener('click', (event: MouseEvent) => {
             const arrow = (event.target as HTMLElement).closest('.s-swiper__arrow');
 
-            if (!arrow) {
+            if (!arrow || arrow.classList.contains('disabled')) {
                 return;
             }
 
-            if (arrow.classList.contains('prev') && this.state.currentItem === 0) {
-                return;
-            }
-
-            if (arrow.classList.contains('next') && this.state.currentItem === this.state.items.length - 1) {
+            if ((arrow.classList.contains('prev') && this.state.currentItem === 0)
+                || (arrow.classList.contains('next') && this.state.currentItem === this.state.items.length - 1)) {
                 return;
             }
 
@@ -201,10 +200,22 @@ export default class Swiper {
     translateStage() {
         this.state.stage.style.transform = `translateX(-${this.calculateTranslate()}px)`;
         this.changeActiveDot();
+        this.checkArrowAccess();
+    }
+
+    checkArrowAccess() {
+        const prevArrow = this.state.el.querySelector('.s-swiper__arrow.prev');
+        const nextArrow = this.state.el.querySelector('.s-swiper__arrow.next');
+        prevArrow.classList[this.state.currentItem === 0 ? 'add' : 'remove']('disabled');
+        nextArrow.classList[this.state.currentItem === this.state.items.length - 1 ? 'add' : 'remove']('disabled');
     }
 
     changeActiveDot() {
         const activeDot = this.state.el.querySelector('.s-swiper__dot.active');
+        if (!activeDot) {
+            return;
+        }
+
         const dots = this.state.el.querySelectorAll('.s-swiper__dot');
 
         activeDot.classList.remove('active');
@@ -215,7 +226,10 @@ export default class Swiper {
         this.state.stage = this.state.el.querySelector('.s-swiper__stage');
         this.state.inner.style.marginLeft = `${this.options.stagePadding}px`;
         this.state.inner.style.marginRight = `${this.options.stagePadding}px`;
-        this.state.el.style.width = `${this.state.swiperWidth}px`;
+
+        const elStyle = getComputedStyle(this.state.el);
+        this.state.swiperWidth = parseFloat(elStyle.getPropertyValue('width'));
+        this.state.itemWidth = this.state.swiperWidth - this.options.stagePadding * 2;
 
         const dots = this.state.el.querySelector('.s-swiper__dots');
 
@@ -256,10 +270,6 @@ export default class Swiper {
     initState(): void {
         this.state.el = document.querySelector(this.selector);
         this.state.el.classList.add('s-swiper', this.options.theme);
-
-        const elStyle = getComputedStyle(this.state.el);
-        this.state.swiperWidth = parseFloat(elStyle.getPropertyValue('width'));
-        this.state.itemWidth = this.state.swiperWidth - this.options.stagePadding * 2;
 
         renderStage(this.state.el);
         this.state.inner = this.state.el.querySelector('.s-swiper__inner');

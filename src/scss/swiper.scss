@@ -51,6 +51,7 @@
 		width: var(--arrow-width);
 		height: var(--arrow-height);
 		left: 0;
+		opacity: 1;
 		cursor: pointer;
 
 		&,
@@ -78,6 +79,10 @@
 			&:before {
 				transform: translate(-50%, -50%) rotate(-135deg);
 			}
+		}
+
+		&.disabled {
+			opacity: 0;
 		}
 
 		&:hover {
