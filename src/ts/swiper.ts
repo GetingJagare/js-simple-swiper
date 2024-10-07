@@ -230,6 +230,7 @@ export default class Swiper {
         const elStyle = getComputedStyle(this.state.el);
         this.state.swiperWidth = parseFloat(elStyle.getPropertyValue('width'));
         this.state.itemWidth = this.state.swiperWidth - this.options.stagePadding * 2;
+        this.state.el.style.setProperty('--stage-padding', `${this.options.stagePadding}px`);
 
         const dots = this.state.el.querySelector('.s-swiper__dots');
 
