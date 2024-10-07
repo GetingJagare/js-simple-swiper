@@ -4,7 +4,7 @@ npm i js-simple-swiper --save-dev
 ```
 
 ## Usage Example
-HTML:
+### HTML
 ```
 <div id="swiper">
     <img src="https://dummyimage.com/600x400/000/fff.jpg"/>
@@ -12,10 +12,18 @@ HTML:
     <img src="https://dummyimage.com/600x400/000/fff.jpg"/>
 </div>
 ```
-JS:
+### CSS
+Put this line into your javascript file:
+```
+import 'js-simple-swiper/dist/index.css';
+```
+Or this one into scss-file:
+```
+@import "~js-simple-swiper/dist/index.css";
+```
+### JS
 ```
 import Swiper from 'js-simple-swiper';
-import 'js-simple-swiper/dist/index.css';
 
 new Swiper('#swiper');
 ```
