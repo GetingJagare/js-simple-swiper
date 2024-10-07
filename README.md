@@ -9,10 +9,7 @@ HTML:
 <div id="swiper">
     <img src="https://dummyimage.com/600x400/000/fff.jpg"/>
     <img src="https://dummyimage.com/600x400/000/fff.jpg"/>
-	<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
-	<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
-	<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
-	<img src="https://dummyimage.com/600x400/000/fff.jpg"/>
+    <img src="https://dummyimage.com/600x400/000/fff.jpg"/>
 </div>
 ```
 JS:
