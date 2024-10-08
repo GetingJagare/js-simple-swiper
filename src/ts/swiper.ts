@@ -1,14 +1,15 @@
-import { ISwiperOptions } from "./interfaces/options";
+import { ISwiperOptions, ICommonObject } from "./interfaces/options";
 import { IState } from "./interfaces/state";
 import { linesAngle } from "./helpers/math";
 import { Line } from "./interfaces/math";
 import { renderStage } from "./views/stage";
 import { renderArrows, renderDots } from "./views/nav";
-import { mergeObjects } from "./helpers/object";
+import { mergeObjects, cloneObject } from "./helpers/object";
 import '../scss/swiper.scss';
 
 export default class Swiper {
-    options: ISwiperOptions = {
+    options: ISwiperOptions = {}
+    defaultOptions: ISwiperOptions = {
         nav: {
             arrows: true,
             dots: true,
@@ -16,7 +17,7 @@ export default class Swiper {
         margin: 20,
         stagePadding: 30,
         items: 1,
-        swiping: true,
+        swiping: false,
         maxSwipingVertAngle: 45,
         theme: 'default',
         breakpoints: {
@@ -25,6 +26,7 @@ export default class Swiper {
             }
         }
     }
+    userOptions: ISwiperOptions = {}
     state: IState = {
         currentItem: 0,
         el: null,
@@ -40,19 +42,60 @@ export default class Swiper {
         },
     }
     selector: string = ''
+    swipingHandlers: ICommonObject = {}
 
-    constructor(selector: string = '', options: ISwiperOptions) {
+    constructor(selector: string = '', options: ISwiperOptions = {}) {
         if (!selector) {
             return;
         }
 
         this.selector = selector;
-        this.applyOptions(options);
+        this.userOptions = options;
+
+        this.initSwipingHandlers();
         this.init();
     }
 
-    applyOptions(options: ISwiperOptions = {}): void {
-        mergeObjects(options, this.options);
+    initSwipingHandlers() {
+        this.swipingHandlers['mousedown'] = this.swipeStart.bind(this);
+        this.swipingHandlers['touchstart'] = this.swipeStart.bind(this);
+
+        this.swipingHandlers['mousemove'] = this.swipeDrag.bind(this);
+        this.swipingHandlers['touchmove'] = this.swipeDrag.bind(this);
+
+        this.swipingHandlers['mouseout'] = this.swipeEnd.bind(this);
+        this.swipingHandlers['mouseup'] = this.swipeEnd.bind(this);
+        this.swipingHandlers['touchend'] = this.swipeEnd.bind(this);
+        this.swipingHandlers['touchcancel'] = this.swipeEnd.bind(this);
+    }
+
+    getBreakPointOptions(): ISwiperOptions | null {
+        if (!this.options.breakpoints) {
+            return null;
+        }
+
+        const breakpoints = Object.keys(this.options.breakpoints);
+        let options: ISwiperOptions | null = null;
+        for (let i = 0; i < breakpoints.length; i++) {
+            const point: number = +breakpoints[i];
+            if (window.innerWidth >= point) {
+                break;
+            }
+
+            options = cloneObject(this.options.breakpoints[point]);
+        }
+
+        return options;
+    }
+
+    applyOptions(): void {
+        this.options = cloneObject(this.defaultOptions);
+        mergeObjects(this.userOptions, this.options);
+
+        const breakPointOptions = this.getBreakPointOptions();
+        if (breakPointOptions) {
+            mergeObjects(breakPointOptions, this.options);
+        }
     }
 
     attachEvents(): void {
@@ -117,100 +160,97 @@ export default class Swiper {
         return !!this.state.swiping.startX;
     }
 
-    swipeStart(event: MouseEvent) {
-        // const e = this.getEvent(event);
+    swipeStart(event: MouseEvent): void {
+        const e = this.getEvent(event) as MouseEvent;
+        const target = (e.target as HTMLElement).closest('.s-swiper__item');
 
-        // const target = e.target.closest(this.itemSelector);
+        if (!target || (e.button !== undefined && e.button !== 0)) {
+            return;
+        }
 
-        // if (!target || (e.which && e.which !== 1)) {
-        //     return;
-        // }
+        console.log(e);
+        event.preventDefault();
 
-        // event.preventDefault();
-
-        // this.swipingState.startX = e.clientX;
-        // this.swipingState.startY = e.clientY;
-        // this.stage.classList.add('slider__stage_smooth');
+        this.state.swiping.startX = e.clientX;
+        this.state.swiping.startY = e.clientY;
     }
 
-    swipeDrag(event: MouseEvent) {
-        // const e = this.getEvent(event);
-        // const target = e.target.closest(this.itemSelector);
+    swipeDrag(event: MouseEvent): void {
+        if (!this.isSwiping()) {
+            return;
+        }
 
-        // if (!target || this.isSwipingAngleBig(e)) {
-        //     return;
-        // }
+        const e = this.getEvent(event) as MouseEvent;
+        const target = (e.target as HTMLElement).closest('.s-swiper__item');
 
-        // event.preventDefault();
+        if (!target || this.isSwipingAngleBig(e)) {
+            return;
+        }
 
-        // target.setAttribute('data-locked', true);
+        event.preventDefault();
 
-        // const dx = e.clientX - this.swipingState.startX;
-        // let translateX = this.calculateTranslate() - dx;
-        // translateX = translateX > 0 ? '-' + translateX : -translateX;
-
-        // this.stage.style.transform = 'translateX(' + translateX + 'px)';
+        const dx = e.clientX - this.state.swiping.startX;
+        const translateX = this.calculateTranslate() - dx;
+        this.state.stage.style.transform = `translateX(${translateX > 0 ? `-${translateX}` : -translateX}px)`;
     }
 
-    swipeEnd (event: MouseEvent) {
-        // const e = this.getEvent(event);
-        // const target = e.target.closest(this.itemSelector);
+    swipeEnd (event: MouseEvent): void {
+        if (!this.isSwiping()) {
+            return;
+        }
 
-        // if (!target || this.isSwipingAngleBig(e)) {
-        //     return;
-        // }
+        const e = this.getEvent(event) as MouseEvent;
+        const target = (e.target as HTMLElement).closest('.s-swiper__item');
 
-        // event.preventDefault();
+        if (!target || this.isSwipingAngleBig(e)) {
+            return;
+        }
 
-        // this.stage.classList.remove('slider__stage_smooth');
+        event.preventDefault();
 
-        // const dx = Math.sign(e.clientX - this.swipingState.startX);
+        const dx = Math.sign(e.clientX - this.state.swiping.startX);
+        const translateCondition = (this.state.currentItem < this.state.items.length - 1 && dx < 0) 
+            || (this.state.currentItem > 0 && dx > 0);
 
-        // const translateCondition = (this.currentItem < this.itemsCount - 1 && dx < 0) || (this.currentItem > 0 && dx > 0);
+        this.state.currentItem += translateCondition ? -dx : 0;
+        this.translateStage();
+        this.state.swiping = {startX: null, startY: null};
+    }
 
-        // this.currentItem += translateCondition ? -dx : 0;
-        // this.translateStage();
-
-        // this.swipingState = {startX: null, startY: null};
-
-        // setTimeout(function () {
-        //     target.removeAttribute('data-locked');
-        // }, 500);
+    detachSwipingEvents(): void {
+        Object.keys(this.swipingHandlers).forEach((eventType: string) => {
+            this.state.inner.removeEventListener(eventType, this.swipingHandlers[eventType]);
+        });
     }
 
     attachSwipingEvents() {
-        // const context = this;
+        this.detachSwipingEvents();
 
-        // this.el.addEventListener('mousedown', function (e) { context.swipeStart(e); });
-        // this.el.addEventListener('touchstart', function (e) { context.swipeStart(e); });
-
-        // this.el.addEventListener('mousemove', function (e) { if (context.isSwiping()) { context.swipeDrag(e); } });
-        // this.el.addEventListener('touchmove', function (e) { if (context.isSwiping()) { context.swipeDrag(e); } });
-
-        // this.el.addEventListener('mouseout', function (e) { if (context.isSwiping()) { context.swipeEnd(e); } });
-        // this.el.addEventListener('mouseup', function (e) { if (context.isSwiping()) { context.swipeEnd(e); } });
-        // this.el.addEventListener('touchend', function (e) { if (context.isSwiping()) { context.swipeEnd(e); } });
-        // this.el.addEventListener('touchcancel', function (e) { if (context.isSwiping()) { context.swipeEnd(e); } });
+        if (this.options.swiping) {
+            Object.keys(this.swipingHandlers).forEach((eventType: string) => {
+                this.state.inner.addEventListener(eventType, this.swipingHandlers[eventType]);
+            });
+        }
     }
 
     calculateTranslate(): number {
         return (this.state.itemWidth + this.options.margin) * this.state.currentItem;
     }
 
-    translateStage() {
+    translateStage(): void {
         this.state.stage.style.transform = `translateX(-${this.calculateTranslate()}px)`;
         this.changeActiveDot();
         this.checkArrowAccess();
     }
 
-    checkArrowAccess() {
+    checkArrowAccess(): void {
         const prevArrow = this.state.el.querySelector('.s-swiper__arrow.prev');
         const nextArrow = this.state.el.querySelector('.s-swiper__arrow.next');
         prevArrow.classList[this.state.currentItem === 0 ? 'add' : 'remove']('disabled');
         nextArrow.classList[this.state.currentItem === this.state.items.length - 1 ? 'add' : 'remove']('disabled');
     }
 
-    changeActiveDot() {
+    changeActiveDot(): void {
         const activeDot = this.state.el.querySelector('.s-swiper__dot.active');
         if (!activeDot) {
             return;
@@ -222,7 +262,7 @@ export default class Swiper {
         dots[this.state.currentItem].classList.add('active');
     }
 
-    setStyles() {
+    setStyles(): void {
         this.state.stage = this.state.el.querySelector('.s-swiper__stage');
         this.state.inner.style.marginLeft = `${this.options.stagePadding}px`;
         this.state.inner.style.marginRight = `${this.options.stagePadding}px`;
@@ -248,7 +288,7 @@ export default class Swiper {
         this.state.stage.style.transform = `translateX(-${this.calculateTranslate()}px)`;
     }
 
-    resetStyles() {
+    resetStyles(): void {
         this.state.el.removeAttribute('style');
         this.state.stage.removeAttribute('style');
         this.state.inner.removeAttribute('style');
@@ -278,6 +318,8 @@ export default class Swiper {
     }
 
     init(): void {
+        this.applyOptions();
+
         if (!this.state.initialized) {
             this.initState();
             this.initNavigation();
@@ -289,5 +331,6 @@ export default class Swiper {
         }
 
         this.setStyles();
+        this.attachSwipingEvents();
     }
 };

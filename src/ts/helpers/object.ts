@@ -1,3 +1,7 @@
+export function cloneObject(sourceObj: object = {}): object {
+    return JSON.parse(JSON.stringify(sourceObj));
+}
+
 export function mergeObjects(
     sourceObj: object = {},
     targetObj: object = {}): void {

@@ -15,3 +15,7 @@ export interface ISwiperOptions {
         [key: number]: ISwiperOptions,
     },
 }
+
+export interface ICommonObject {
+    [key: string]: any
+}
