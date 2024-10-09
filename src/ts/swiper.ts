@@ -168,7 +168,6 @@ export default class Swiper {
             return;
         }
 
-        console.log(e);
         event.preventDefault();
 
         this.state.swiping.startX = e.clientX;
@@ -239,8 +238,14 @@ export default class Swiper {
 
     translateStage(): void {
         this.state.stage.style.transform = `translateX(-${this.calculateTranslate()}px)`;
-        this.changeActiveDot();
-        this.checkArrowAccess();
+
+        if (this.options.nav.dots) {
+            this.changeActiveDot();
+        }
+
+        if (this.options.nav.arrows) {
+            this.checkArrowAccess();
+        }
     }
 
     checkArrowAccess(): void {

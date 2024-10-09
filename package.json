@@ -1,13 +1,12 @@
 {
   "name": "js-simple-swiper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "dev": "webpack --watch --mode=development --env MODE=development",
-    "serve": "webpack serve"
+    "dev": "webpack serve --env MODE=development"
   },
   "author": "Nikita Churilov",
   "license": "ISC",
