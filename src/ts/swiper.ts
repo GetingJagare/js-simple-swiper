@@ -147,31 +147,27 @@ export default class Swiper {
     }
 
     isSwipingAngleBig(e: MouseEvent): boolean {
-        const cat: Line = [
-            {x: this.state.swiping.startX, y: this.state.swiping.startY},
-            {x: e.clientX, y: this.state.swiping.startY},
+        const xAxis: Line = [
+            {x: this.state.swiping.startX, y: e.clientY},
+            {x: e.clientX, y: e.clientY},
         ];
         const hyp: Line = [
             {x: this.state.swiping.startX, y: this.state.swiping.startY},
             {x: e.clientX, y: e.clientY}
         ];
 
-        return linesAngle(cat, hyp) > this.options.maxSwipingVertAngle;
+        return linesAngle(xAxis, hyp) > this.options.maxSwipingVertAngle;
     }
 
     isSwiping(): boolean {
-        return !!this.state.swiping.startX;
+        return this.state.swiping.startX !== null;
     }
 
     swipeStart(event: MouseEvent): void {
         const e = this.getEvent(event) as MouseEvent;
-        const target = (e.target as HTMLElement).closest('.s-swiper__item');
-
-        if (!target || (e.button !== undefined && e.button !== 0)) {
+        if ((e.button !== undefined && e.button !== 0)) {
             return;
         }
-
-        event.preventDefault();
 
         this.state.swiping.startX = e.clientX;
         this.state.swiping.startY = e.clientY;
@@ -183,9 +179,7 @@ export default class Swiper {
         }
 
         const e = this.getEvent(event) as MouseEvent;
-        const target = (e.target as HTMLElement).closest('.s-swiper__item');
-
-        if (!target || this.isSwipingAngleBig(e)) {
+        if (this.isSwipingAngleBig(e)) {
             return;
         }
 
@@ -202,20 +196,22 @@ export default class Swiper {
         }
 
         const e = this.getEvent(event) as MouseEvent;
-        const target = (e.target as HTMLElement).closest('.s-swiper__item');
 
-        if (!target || this.isSwipingAngleBig(e)) {
-            return;
+        if (this.isSwiping() && !this.isSwipingAngleBig(e)) {
+            event.preventDefault();
+
+            const dx = Math.sign(e.clientX - this.state.swiping.startX);
+            const translateCondition = (this.state.currentItem < this.state.items.length - 1 && dx < 0) 
+                || (this.state.currentItem > 0 && dx > 0);
+
+            this.state.currentItem += translateCondition ? -dx : 0;
         }
 
-        event.preventDefault();
-
-        const dx = Math.sign(e.clientX - this.state.swiping.startX);
-        const translateCondition = (this.state.currentItem < this.state.items.length - 1 && dx < 0) 
-            || (this.state.currentItem > 0 && dx > 0);
-
-        this.state.currentItem += translateCondition ? -dx : 0;
         this.translateStage();
+        this.resetSwipingState();
+    }
+
+    resetSwipingState() {
         this.state.swiping = {startX: null, startY: null};
     }
 
