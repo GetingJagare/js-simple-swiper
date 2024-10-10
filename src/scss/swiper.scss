@@ -17,6 +17,11 @@
 		--arrow-height: 60px;
 		--arrow-color: rgba(0, 0, 0, 0.5);
 		--arrow-hover-color: rgba(0, 0, 0, 1);
+
+		@media (max-width: 449px) {
+			--arrow-width: 20px;
+			--arrow-height: 40px;
+		}
 	}
 
 	&__inner {

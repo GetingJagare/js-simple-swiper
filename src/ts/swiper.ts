@@ -74,15 +74,18 @@ export default class Swiper {
             return null;
         }
 
-        const breakpoints = Object.keys(this.options.breakpoints);
+        const breakpoints = Object.keys(this.options.breakpoints).map((br) => +br);
+        breakpoints.sort();
         let options: ISwiperOptions | null = null;
-        for (let i = 0; i < breakpoints.length; i++) {
-            const point: number = +breakpoints[i];
-            if (window.innerWidth >= point) {
-                break;
+        for (let i = breakpoints.length - 1; i >= 0; i--) {
+            if (window.innerWidth >= breakpoints[i]) {
+                continue;
             }
 
-            options = cloneObject(this.options.breakpoints[point]);
+            if (!options) {
+                options = {};
+            }
+            mergeObjects(this.options.breakpoints[breakpoints[i]], options);
         }
 
         return options;

@@ -19,7 +19,16 @@
 
 <script type="module">
 	import Swiper from './dist/index.js';
-	new Swiper('#swiper');
+	new Swiper('#swiper', {
+		breakpoints: {
+			450: {
+				stagePadding: 20
+			},
+			768: {
+				stagePadding: 25
+			}
+		}
+	});
 </script>
 </body>
 </html>
