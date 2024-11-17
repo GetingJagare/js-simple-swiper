@@ -1,8 +1,6 @@
-export function renderArrows(parent: HTMLElement): void {
+export function renderArrows(): HTMLElement {
     const arrowsElement = document.createElement('div');
     arrowsElement.classList.add('s-swiper__arrows');
-
-    parent.appendChild(arrowsElement);
 
     const prevArrowElement = document.createElement('span');
     prevArrowElement.classList.add('s-swiper__arrow', 'prev', 'disabled');
@@ -11,13 +9,13 @@ export function renderArrows(parent: HTMLElement): void {
     const nextArrowElement = document.createElement('span');
     nextArrowElement.classList.add('s-swiper__arrow', 'next');
     arrowsElement.appendChild(nextArrowElement);
+
+    return arrowsElement;
 }
 
-export function renderDots(parent: HTMLElement, itemCount: number = 0): void {
+export function renderDots(itemCount: number = 0): HTMLElement {
     const dotsElement = document.createElement('div');
     dotsElement.classList.add('s-swiper__dots');
-
-    parent.appendChild(dotsElement);
 
     for (let i = 0; i < itemCount; i++) {
         const dotElement = document.createElement('span');
@@ -30,5 +28,7 @@ export function renderDots(parent: HTMLElement, itemCount: number = 0): void {
         dotElement.setAttribute('data-index', `${i}`);
         dotsElement.appendChild(dotElement);
     }
+
+    return dotsElement;
 }
 

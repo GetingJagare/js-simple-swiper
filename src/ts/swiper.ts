@@ -31,6 +31,8 @@ export default class Swiper {
         currentItem: 0,
         el: null,
         stage: null,
+        dots: null,
+        arrows: null,
         inner: null,
         swiperWidth: 0,
         itemWidth: 0,
@@ -76,16 +78,11 @@ export default class Swiper {
 
         const breakpoints = Object.keys(this.options.breakpoints).map((br) => +br);
         breakpoints.sort();
-        let options: ISwiperOptions | null = null;
+        const options: ISwiperOptions = {};
         for (let i = breakpoints.length - 1; i >= 0; i--) {
-            if (window.innerWidth >= breakpoints[i]) {
-                continue;
+            if (window.innerWidth < breakpoints[i]) {
+                mergeObjects(this.options.breakpoints[breakpoints[i]], options);
             }
-
-            if (!options) {
-                options = {};
-            }
-            mergeObjects(this.options.breakpoints[breakpoints[i]], options);
         }
 
         return options;
@@ -303,12 +300,20 @@ export default class Swiper {
     }
 
     initNavigation(): void {
-        if (this.options.nav.dots) {
-            renderDots(this.state.el, this.state.items.length);
+        if (this.options.nav.dots && !this.state.dots) {
+            this.state.dots = renderDots(this.state.items.length);
+            this.state.el.appendChild(this.state.dots);
+        } else if (!this.options.nav.dots && this.state.dots) {
+            this.state.dots.remove();
+            this.state.dots = null;
         }
 
-        if (this.options.nav.arrows) {
-            renderArrows(this.state.el);
+        if (this.options.nav.arrows && !this.state.arrows) {
+            this.state.arrows = renderArrows();
+            this.state.el.appendChild(this.state.arrows);
+        } else if (!this.options.nav.arrows && this.state.arrows) {
+            this.state.arrows.remove();
+            this.state.arrows = null;
         }
     }
 
@@ -326,13 +331,13 @@ export default class Swiper {
 
         if (!this.state.initialized) {
             this.initState();
-            this.initNavigation();
-
             this.attachEvents();
             this.state.initialized = true;
         } else {
             this.resetStyles();
         }
+
+        this.initNavigation();
 
         this.setStyles();
         this.attachSwipingEvents();
