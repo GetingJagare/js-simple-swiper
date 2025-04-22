@@ -13,7 +13,8 @@ export default function ( env ) {
                 overlay: false,
             },
             open: true,
-            host: '127.0.0.1',
+            host: '0.0.0.0',
+            allowedHosts: 'all',
             liveReload: true,
             watchFiles: [
                 `${currentDir}/src/**/*.js`,
