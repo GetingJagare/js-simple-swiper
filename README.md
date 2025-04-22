@@ -70,3 +70,19 @@ new Swiper('#swiper', {
     theme: '<theme_name>',
 });
 ```
+
+## Development
+### Build
+```
+make build
+```
+
+### Launch for development
+```
+make stop
+```
+
+### Stop
+```
+make stop
+```
