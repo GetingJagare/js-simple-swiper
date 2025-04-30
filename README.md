@@ -77,12 +77,17 @@ new Swiper('#swiper', {
 make build
 ```
 
-### Launch for development
+### Launch
 ```
-make stop
+make dev
 ```
 
 ### Stop
 ```
 make stop
+```
+
+## Production
+```
+make prod
 ```
